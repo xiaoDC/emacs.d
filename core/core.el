@@ -26,12 +26,12 @@
   "Current version of Shadow Emacs")
 
 (defconst shadow-emacs-dir
-  (expand-file-name user-emacs-directory)
+  ;; (expand-file-name user-emacs-directory)
+  "/Users/fri3nds/myself/emacs.d"
   "The path to this emacs.d directory")
 
-(defun console()
-	(message shadow-version)
-	(message shadow-emacs-dir)
-	)
 
-(console)
+(require 'core-ui)
+(require 'core-evil)
+
+(provide 'core)
