@@ -57,3 +57,4 @@
 (setq inhibit-splash-screen 1)
 
 (require 'init-evil)
+(require 'init-ui)

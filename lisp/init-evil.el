@@ -25,13 +25,24 @@
     :config
     (global-evil-surround-mode)))
 
+(defun shadow-init-evil-keybindings ()
+  "初始化evil的键位"
+  ;; evil-surround
+  ;; 交换evil-surround的大小写s
+  (evil-define-key 'visual evil-surround-mode-map "s" 'evil-surround-region)
+  (evil-define-key 'visual evil-surround-mode-map "S" 'evil-substitute)
+  ;; evil-leader
+  ;; (evil-leader/set-key "SPC")
+  )
+
 (defun shadow--init-evil-packages ()
   (shadow--init-evil))
 
-
 (defun shadow--setup-evil ()
   "设置evil的环境"
-  (shadow--init-evil-packages))
+  (shadow--init-evil-packages)
+  (shadow-init-evil-keybindings)
+  )
 
 ;;;###autoload
 (shadow--setup-evil)
