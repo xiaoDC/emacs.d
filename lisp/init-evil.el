@@ -5,8 +5,8 @@
     :ensure t
     :commands (evil-mode evil-define-key)
     :config
-    (evil-mode 1)
     (shadow--init-evil-leader)
+    (evil-mode 1)
     (shadow--init-evil-intent-textobject)
     ))
 
@@ -31,8 +31,12 @@
   ;; 交换evil-surround的大小写s
   (evil-define-key 'visual evil-surround-mode-map "s" 'evil-surround-region)
   (evil-define-key 'visual evil-surround-mode-map "S" 'evil-substitute)
+
+  (define-key evil-normal-state-map (kbd "SPC") nil)
+  (define-key evil-motion-state-map (kbd "SPC") nil)
   ;; evil-leader
-  ;; (evil-leader/set-key "SPC")
+  (evil-leader/set-leader "<SPC>")
+  (evil-leader/set-key "SPC" 'counsel-M-x)
   )
 
 (defun shadow--init-evil-packages ()

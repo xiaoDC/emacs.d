@@ -16,11 +16,12 @@
 (setq package-archives '(("melpa-cn" . "https://elpa.zilongshanren.com/melpa/")
                          ("org-cn"   . "https://elpa.zilongshanren.com/org/")
                          ("gnu-cn"   . "https://elpa.zilongshanren.com/gnu/")
-                         ("melpa" . "http://melpa.org/packages/")
-                         ("melpa-stable" . "https://stable.melpa.org/packages/")
-                         ("marmalade" . "http://marmalade-repo.org/packages/")
-                         ("elpy" . "http://jorgenschaefer.github.io/packages/")
-                         ("gnu" . "http://elpa.gnu.org/packages/"))
+                         ;; ("melpa" . "http://melpa.org/packages/")
+                         ;; ("melpa-stable" . "https://stable.melpa.org/packages/")
+                         ;; ("marmalade" . "http://marmalade-repo.org/packages/")
+                         ;; ("elpy" . "http://jorgenschaefer.github.io/packages/")
+                         ;; ("gnu" . "http://elpa.gnu.org/packages/")
+                         )
       package-enable-at-startup nil)
 ;; 设置package-enable-at-startup的意义是防止重复加载包影响性能
 ;; 从这里抄来的:https://lambeta.com/2017/01/01/Emacs-configs-for-a-clojurian
@@ -42,8 +43,7 @@
 
 ;; 设置gc阈值
 (setq gc-cons-threshold most-positive-fixnum)
-(defconst initial-gc-cons-threshold gc-cons-threshold
-  "初始gc阈值")
+(defconst initial-gc-cons-threshold gc-cons-threshold "初始gc阈值")
 (add-hook 'after-init-hook
           (lambda () (setq gc-cons-threshold initial-gc-cons-threshold)))
 
