@@ -181,6 +181,14 @@ ask the user if a new layout should be created."
            (interactive)
            (spacemacs/layout-switch-by-pos ,(if (eq 0 i) 9 (1- i))))))
 
+(defun spacemacs/layout-switch-to (pos)
+  "Switch to perspective but ask for POS.
+If POS has no layout, and `dotspacemacs-auto-generate-layout-names'
+is non-nil, create layout with auto-generated name. Otherwise,
+ask the user if a new layout should be created."
+  (interactive "NLayout to switch to/create: ")
+  (spacemacs/layout-switch-by-pos (1- pos)))
+
 (defun spacemacs/layout-goto-default ()
   "Go to `dotspacemacs-default-layout-name` layout"
   (interactive)
@@ -518,8 +526,19 @@ Run PROJECT-ACTION on project."
                projectile-known-projects))
      :fuzzy-match helm-projectile-fuzzy-match
      :mode-line helm-read-file-name-mode-line-string
+     :keymap (let ((map (make-sparse-keymap)))
+               (define-key map
+                 (kbd "C-d") #'(lambda () (interactive)
+                                 (helm-exit-and-execute-action
+                                  (lambda (project)
+                                    (spacemacs||switch-project-persp project
+                                      (dired project))))))
+               map)
      :action `(("Switch to Project Perspective" .
                 spacemacs//helm-persp-switch-project-action)
+               ("Switch to Project Perspective and Open Dired `C-d'" .
+                ,(spacemacs//helm-persp-switch-project-action-maker
+                  (lambda () (dired "."))))
                ("Switch to Project Perspective and Show Recent Files" .
                 ,(spacemacs//helm-persp-switch-project-action-maker
                   'helm-projectile-recentf))
@@ -546,6 +565,11 @@ Run PROJECT-ACTION on project."
               projectile-known-projects)
             :action #'spacemacs//ivy-persp-switch-project-action
             :caller 'spacemacs/ivy-persp-switch-project))
+
+(defun spacemacs/ivy-switch-project-open-dired (project)
+  (interactive)
+  (spacemacs||switch-project-persp project
+    (dired project)))
 
 
 ;; Eyebrowse
@@ -593,6 +617,7 @@ WINDOW is the representation of a window in a window-state object."
   "Execute FN once for each window in STATE and make a list of the results.
 FN is a function to execute.
 STATE is a window-state object."
+  (defvar result) ;; use dynamic binding
   (let (result)
     (spacemacs/window-state-walk-windows-1 (cdr state) fn)
     result))
@@ -791,3 +816,32 @@ containing the buffer."
                (append (persp-parameter 'gui-eyebrowse-window-configs persp)
                        (persp-parameter 'term-eyebrowse-window-configs persp)))
         (eyebrowse--rename-window-config-buffers window-config old new)))))
+
+
+;; layout local variables
+
+(defun spacemacs/make-variable-layout-local (&rest vars)
+  "Make variables become layout-local whenever they are set.
+Accepts a list of VARIABLE, DEFAULT-VALUE pairs.
+
+(spacemacs/make-variable-layout-local 'foo 1 'bar 2)"
+  (cl-loop for (symbol default-value) on vars by 'cddr
+           do (add-to-list 'spacemacs--layout-local-variables (cons symbol default-value))))
+
+(defun spacemacs//load-layout-local-vars (persp-name &rest _)
+  "Load the layout-local values of variables for PERSP-NAME."
+  (let ((layout-local-vars (-filter 'boundp
+                                    (-map 'car
+                                          spacemacs--layout-local-variables))))
+    ;; save the current layout
+    (ht-set! spacemacs--layout-local-map
+             (spacemacs//current-layout-name)
+             (--map (cons it (symbol-value it))
+                    layout-local-vars))
+    ;; load the default values into the new layout
+    (--each layout-local-vars
+      (set it (alist-get it spacemacs--layout-local-variables)))
+    ;; override with the previously bound values for the new layout
+    (--when-let (ht-get spacemacs--layout-local-map persp-name)
+      (-each it
+        (-lambda ((var . val)) (set var val))))))

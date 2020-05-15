@@ -22,6 +22,7 @@
         evil-cleverparens
         eval-sexp-fu
         flycheck
+        flycheck-elsa
         flycheck-package
         ggtags
         counsel-gtags
@@ -31,9 +32,11 @@
         nameless
         overseer
         parinfer
+        rainbow-identifiers
         semantic
         smartparens
         srefactor
+        emr
         ))
 
 (defun emacs-lisp/init-ielm ()
@@ -136,14 +139,19 @@
       (add-hook 'emacs-lisp-mode-hook 'elisp-slime-nav-mode)
       (dolist (mode '(emacs-lisp-mode lisp-interaction-mode))
         (spacemacs/declare-prefix-for-mode mode "mg" "find-symbol")
-        (spacemacs/declare-prefix-for-mode mode "mh" "help")
         (spacemacs/set-leader-keys-for-major-mode mode
-          "hh" 'elisp-slime-nav-describe-elisp-thing-at-point)
+          "gb" 'xref-pop-marker-stack)
+        (spacemacs/declare-prefix-for-mode mode "mh" "help")
+
+        ;; Load better help mode if helpful is installed
+        (if (configuration-layer/layer-used-p 'helpful)
+            (spacemacs/set-leader-keys-for-major-mode mode
+              "hh" 'helpful-at-point)
+          (spacemacs/set-leader-keys-for-major-mode mode
+            "hh" 'elisp-slime-nav-describe-elisp-thing-at-point))
         (let ((jumpl (intern (format "spacemacs-jump-handlers-%S" mode))))
           (add-to-list jumpl 'elisp-slime-nav-find-elisp-thing-at-point))))
-    :config (spacemacs|hide-lighter elisp-slime-nav-mode)
-
-    ))
+    :config (spacemacs|hide-lighter elisp-slime-nav-mode)))
 
 (defun emacs-lisp/init-emacs-lisp ()
   (dolist (mode '(emacs-lisp-mode lisp-interaction-mode))
@@ -258,6 +266,10 @@
   (use-package flycheck-package
     :hook (emacs-lisp-mode . flycheck-package-setup)))
 
+(defun emacs-lisp/init-flycheck-elsa ()
+  (use-package flycheck-elsa
+    :hook (emacs-lisp-mode . flycheck-elsa-setup)))
+
 (defun emacs-lisp/post-init-counsel-gtags ()
   (spacemacs/counsel-gtags-define-keys-for-mode 'emacs-lisp-mode))
 
@@ -269,6 +281,9 @@
 
 (defun emacs-lisp/post-init-parinfer ()
   (add-hook 'emacs-lisp-mode-hook 'parinfer-mode))
+
+(defun emacs-lisp/post-init-rainbow-identifiers ()
+  (add-hook 'emacs-lisp-mode-hook #'colors//rainbow-identifiers-ignore-keywords))
 
 (defun emacs-lisp/post-init-semantic ()
   (add-hook 'emacs-lisp-mode-hook 'semantic-mode)
@@ -296,3 +311,35 @@
     (spacemacs/set-leader-keys-for-major-mode mode
       "ec" 'spacemacs/eval-current-form-sp
       "es" 'spacemacs/eval-current-symbol-sp)))
+
+(defun emacs-lisp/init-emr ()
+  (use-package emr
+    :config
+    (let ((key-binding-prefixes
+           '(("mr" . "refactor")
+             ("mrd" . "delete")
+             ("mre" . "extract/expand")
+             ("mrf" . "find/function")
+             ("mri" . "insert/inline"))))
+      (mapc (lambda (x) (spacemacs/declare-prefix-for-mode
+                          'emacs-lisp-mode (car x) (cdr x)))
+            key-binding-prefixes))
+    (spacemacs/set-leader-keys-for-major-mode 'emacs-lisp-mode
+      "rfe" #'emr-el-implement-function
+      "rfd" #'emr-el-find-unused-definitions
+
+      "ref" #'emr-el-extract-function
+      "rev" #'emr-el-extract-variable
+      "rel" #'emr-el-extract-to-let
+      "rec" #'emr-el-extract-constant
+      "rea" #'emr-el-extract-autoload
+
+      "riv" #'emr-el-inline-variable
+      "ris" #'emr-el-inline-let-variable
+      "rif" #'emr-el-inline-function
+      "ria" #'emr-el-insert-autoload-directive
+
+      "rdl" #'emr-el-delete-let-binding-form
+      "rdd" #'emr-el-delete-unused-definition
+
+      "ew"  #'emr-el-eval-and-replace)))
