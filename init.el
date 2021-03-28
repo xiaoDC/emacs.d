@@ -16,7 +16,7 @@
 ;; see `SPC h . dotspacemacs-gc-cons' for more info
 (defconst emacs-start-time (current-time))
 ;; (setq gc-cons-threshold 402653184 gc-cons-percentage 0.6)
-(setq gc-cons-threshold 8589934592 gc-cons-percentage 0.8)
+(setq gc-cons-threshold 4294967296 gc-cons-percentage 0.7)
 
 
 
