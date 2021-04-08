@@ -412,7 +412,7 @@ elements in the `kill-ring'."
 the which-key buffer will be shown if you have not completed a
 key sequence. Setting this variable is equivalent to setting
 `which-key-idle-delay'."
-  'float
+  'number
   'spacemacs-dotspacemacs-init)
 
 (spacemacs|defc dotspacemacs-which-key-position 'bottom
@@ -489,7 +489,7 @@ can be toggled through `toggle-transparency'."
   "If non nil unicode symbols are displayed in the mode-line (eg. for lighters).
 If you use Emacs as a daemon and wants unicode characters only in GUI set
 the value to quoted `display-graphic-p'. (default t)"
-  '(choice boolean (connst display-graphic-p))
+  '(choice boolean (const display-graphic-p))
   'spacemacs-dotspacemacs-init)
 
 (spacemacs|defc dotspacemacs-smooth-scrolling t
@@ -984,18 +984,17 @@ If ARG is non nil then ask questions to the user before installing the dotfile."
             (when (string-match-p "%t" title-format)
               (if (boundp 'spacemacs--buffer-project-name)
                   spacemacs--buffer-project-name
-                (set (make-local-variable 'spacemacs--buffer-project-name)
-                     (if (fboundp 'projectile-project-name)
-                         (projectile-project-name)
-                       "-")))))
+                (setq-local spacemacs--buffer-project-name
+                            (if (fboundp 'projectile-project-name)
+                                (projectile-project-name)
+                              "-")))))
            (abbreviated-file-name
             (when (string-match-p "%a" title-format)
               (if (boundp 'spacemacs--buffer-abbreviated-filename)
                   spacemacs--buffer-abbreviated-filename
-                (set (make-local-variable
-                      'spacemacs--buffer-abbreviated-filename)
-                     (abbreviate-file-name (or (buffer-file-name)
-                                               (buffer-name)))))))
+                (setq-local spacemacs--buffer-abbreviated-filename
+                            (abbreviate-file-name (or (buffer-file-name)
+                                                      (buffer-name)))))))
            (fs (format-spec-make
                 ?a abbreviated-file-name
                 ?t project-name

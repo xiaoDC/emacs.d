@@ -1,4 +1,4 @@
-;;; config.el --- Shell Scripts Layer Configuration File for Spacemacs
+;;; packages.el --- pocket Layer packages File for Spacemacs
 ;;
 ;; Copyright (c) 2012-2021 Sylvain Benner & Contributors
 ;;
@@ -20,11 +20,17 @@
 ;; You should have received a copy of the GNU General Public License
 ;; along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
+(defconst pocket-packages
+  '(pocket-reader))
 
-;; variables
-
-(spacemacs|define-jump-handlers sh-mode)
-
-(defvar shell-scripts-backend (when (configuration-layer/layer-used-p 'lsp) 'lsp)
-  "The backend to use for IDE features.
-When `lsp' layer is used, defaults to `lsp'.")
+(defun pocket/init-pocket-reader ()
+  (use-package pocket-reader
+    :defer t
+    :init (spacemacs/set-leader-keys "awp" 'pocket-reader)
+    :config
+    (progn
+      (evilified-state-evilify-map pocket-reader-mode-map
+        :mode pocket-reader-mode
+        :bindings
+        "gr" 'pocket-reader-resort
+        "gR" 'pocket-reader-refresh))))
