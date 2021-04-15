@@ -500,6 +500,12 @@ screen."
   'boolean
   'spacemacs-dotspacemacs-init)
 
+(spacemacs|defc dotspacemacs-scroll-bar-while-scrolling t
+  "Show the scroll bar while scrolling. The auto hide time can be configured by
+setting this variable to a number."
+  '(choice boolean number)
+  'spacemacs-dotspacemacs-init)
+
 (spacemacs|defc dotspacemacs-line-numbers nil
   "Control line numbers activation.
 If set to `t' or `relative' line numbers are turned on in all `prog-mode' and
@@ -621,6 +627,11 @@ number of recent files to show in each project."
 (spacemacs|defc dotspacemacs-startup-buffer-responsive t
   "True if the home buffer should respond to resize events."
   'boolean
+  'spacemacs-dotspacemacs-init)
+
+(spacemacs|defc dotspacemacs-startup-buffer-multi-digit-delay 0.4
+  "The minimum delay in seconds between number key presses."
+  'number
   'spacemacs-dotspacemacs-init)
 
 (spacemacs|defc dotspacemacs-excluded-packages '()
@@ -1095,7 +1106,11 @@ error recovery."
 (defmacro dotspacemacs||let-init-test (&rest body)
   "Macro to protect dotspacemacs variables"
   `(let ((fpath dotspacemacs-filepath)
-         ,@(dotspacemacs/get-variable-list)
+         ,@(mapcar (lambda (symbol)
+                     `(,symbol ,(let ((v (symbol-value symbol)))
+                                  (if (or (symbolp v) (listp v))
+                                      `',v v))))
+                   (dotspacemacs/get-variable-list))
          (passed-tests 0) (total-tests 0))
      (setq dotspacemacs-filepath fpath)
      (load dotspacemacs-filepath)

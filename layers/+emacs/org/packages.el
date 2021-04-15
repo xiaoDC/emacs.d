@@ -42,7 +42,11 @@
     (org-vcard :toggle org-enable-org-contacts-support)
     (org-brain :toggle (version<= "25" emacs-version))
     (org-expiry :location built-in)
-    (org-journal :toggle org-enable-org-journal-support)
+    ; temporarily point org-journal to dalanicolai fork until dalanicolai's
+    ; PR's https://github.com/bastibe/org-journal/pulls get merged
+    (org-journal
+     :location (recipe :fetcher github :repo "dalanicolai/org-journal")
+     :toggle org-enable-org-journal-support)
     org-download
     (org-jira :toggle org-enable-jira-support)
     org-mime
@@ -65,7 +69,8 @@
     (verb :toggle org-enable-verb-support)
     (org-roam :toggle org-enable-roam-support)
     (valign :toggle org-enable-valign)
-    (org-appear :toggle org-enable-appear-support)))
+    (org-appear :toggle org-enable-appear-support)
+    (org-roam-server :require org-roam :toggle org-enable-roam-server)))
 
 (defun org/post-init-company ()
   (spacemacs|add-company-backends :backends company-capf :modes org-mode))
@@ -1003,3 +1008,11 @@ Headline^^            Visit entry^^               Filter^^                    Da
       (setq org-appear-autolinks t
             org-appear-autoemphasis t
             org-appear-autosubmarkers t))))
+
+(defun org/init-org-roam-server()
+  (use-package org-roam-server
+    :defer t
+    :init
+    (progn
+      (spacemacs/set-leader-keys "aors" 'org-roam-server-mode)
+      (spacemacs/set-leader-keys-for-major-mode 'org-mode "rs" 'org-roam-server-mode))))
