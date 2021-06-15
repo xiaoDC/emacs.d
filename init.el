@@ -27,8 +27,11 @@
 ;; Avoid garbage collection during startup.
 ;; see `SPC h . dotspacemacs-gc-cons' for more info
 (defconst emacs-start-time (current-time))
-;; (setq gc-cons-threshold 402653184 gc-cons-percentage 0.6)
-(setq gc-cons-threshold 4294967296 gc-cons-percentage 0.7)
+;; (setq gc-cons-threshold 4294967296 gc-cons-percentage 0.7)
+;; 增大垃圾回收的阈值，提高整体性能（内存换效率）
+(setq gc-cons-threshold (* 1024 1024 256))
+;; 增大同LSP服务器交互时的读取文件的大小
+(setq read-process-output-max (* 1024 1024 768)) ;; 512MB
 
 
 
