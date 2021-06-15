@@ -1,8 +1,8 @@
-;;; packages.el --- perl6 layer packages file for Spacemacs.
+;;; config.el --- parinfer layer config file for Spacemacs.
 ;;
 ;; Copyright (c) 2012-2021 Sylvain Benner & Contributors
 ;;
-;; Author:  Bahtiar `kalkin-`''Gadimov <bahtiar@gadimov.de>
+;; Author: Sylvain Benner <sylvain.benner@gmail.com>
 ;; URL: https://github.com/syl20bnr/spacemacs
 ;;
 ;; This file is not part of GNU Emacs.
@@ -20,32 +20,13 @@
 ;; You should have received a copy of the GNU General Public License
 ;; along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
+(spacemacs|defc parinfer-auto-download t
+  "If non nil auto install the parinfer rust library"
+  'boolean nil nil)
 
-(defconst perl6-packages
-  '(
-    company
-    evil
-    flycheck
-    (flycheck-perl6 :requires flycheck)
-    raku-mode
-    ))
+(spacemacs|defc parinfer-library nil
+  "If non nil allows to set a custom library name and folder
 
-(defun perl6/post-init-company ()
-  (spacemacs|add-company-backends
-    :backends company-capf
-    :modes perl6-mode))
-
-(defun perl6/post-init-evil ()
-  (add-to-list 'spacemacs-jump-handlers-perl6-mode 'evil-jump-to-tag))
-
-(defun perl6/post-init-flycheck ()
-  (spacemacs/enable-flycheck 'perl6-mode))
-
-(defun perl6/init-flycheck-perl6 ()
-  (with-eval-after-load 'flycheck
-    (require 'flycheck-perl6)))
-
-(defun perl6/init-raku-mode ()
-  (use-package raku-mode
-    :defer t
-    :mode (("/perl6/site/sources/" . perl6-mode))))
+Setting a path here and disabling `parinfer-auto-download'
+allows to use a local version of the library."
+  '(file :must-match t) nil nil)

@@ -1,8 +1,8 @@
-;;; funcs.el --- nlinum Layer packages File
+;; config.el --- Nav-flash Layer Configuration File for Spacemacs.
 ;;
 ;; Copyright (c) 2012-2021 Sylvain Benner & Contributors
 ;;
-;; Author: Thomas de Beauchêne <thomas.de.beauchene@gmail.com>
+;; Author: Thanh Vuong <thanhvg@gmail.com>
 ;; URL: https://github.com/syl20bnr/spacemacs
 ;;
 ;; This file is not part of GNU Emacs.
@@ -20,13 +20,10 @@
 ;; You should have received a copy of the GNU General Public License
 ;; along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
+(defvar nav-flash-exclude-commands
+  '(mouse-set-point mouse-drag-region evil-mouse-drag-region +org/dwim-at-point
+                    org-find-file org-find-file-at-mouse)
+  "A list of commands that should not trigger nav-flash.")
 
-(defun spacemacs/nlinum-maybe-on ()
-  (when (spacemacs/enable-line-numbers-p)
-    (nlinum-mode)))
-
-(defun spacemacs/nlinum-relative-toggle ()
-  (interactive)
-  (if (not (bound-and-true-p nlinum-relative-mode))
-      (nlinum-mode))
-  (nlinum-relative-toggle))
+(defvar nav-flash--last-point nil
+  "internal variable for nav-flash.")

@@ -48,7 +48,7 @@
       (progn
         (unless javascript-lsp-linter
           (setq-local lsp-diagnostics-provider :none))
-        (lsp))
+        (lsp-deferred))
     (message "`lsp' layer is not installed, please add `lsp' layer to your dotfile.")))
 
 
@@ -63,7 +63,7 @@
 (defun spacemacs//javascript-jsx-file-p ()
   "Enable rjsx mode by using magic-mode-alist."
   (when buffer-file-name
-    (and (memq (file-name-extension buffer-file-name) '("js" "jsx"))
+    (and (member (file-name-extension buffer-file-name) '("js" "jsx"))
          (re-search-forward "\\(^\\s-*import React\\|\\( from \\|require(\\)[\"']react\\)"
                             magic-mode-regexp-match-limit t)
          (save-excursion

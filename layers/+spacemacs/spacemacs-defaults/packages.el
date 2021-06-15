@@ -42,12 +42,12 @@
         (hi-lock :location built-in)
         (image-mode :location built-in)
         (imenu :location built-in)
-        (linum :location built-in :toggle (version< emacs-version "26"))
         (occur-mode :location built-in)
         (package-menu :location built-in)
         ;; page-break-lines is shipped with spacemacs core
         (page-break-lines :location built-in)
         (process-menu :location built-in)
+        quickrun
         (recentf :location built-in)
         (savehist :location built-in)
         (saveplace :location built-in)
@@ -58,6 +58,7 @@
         (visual-line-mode :location built-in)
         (whitespace :location built-in)
         (winner :location built-in)
+        (xref :location built-in)
         (zone :location built-in)))
 
 
@@ -377,6 +378,14 @@
 (defun spacemacs-defaults/init-process-menu ()
   (evilified-state-evilify process-menu-mode process-menu-mode-map))
 
+(defun spacemacs-defaults/init-quickrun ()
+  (use-package quickrun
+    :defer t
+    :init
+    (setq quickrun-focus-p nil)
+    (spacemacs/set-leader-keys
+      "xx" 'spacemacs/quickrun)))
+
 (defun spacemacs-defaults/init-recentf ()
   (use-package recentf
     :defer (spacemacs/defer)
@@ -398,7 +407,9 @@
       (add-to-list 'recentf-exclude
                    (recentf-expand-file-name spacemacs-cache-directory))
       (add-to-list 'recentf-exclude (recentf-expand-file-name package-user-dir))
-      (add-to-list 'recentf-exclude "COMMIT_EDITMSG\\'"))))
+      (add-to-list 'recentf-exclude "COMMIT_EDITMSG\\'")
+      (when custom-file
+        (add-to-list 'recentf-exclude custom-file)))))
 
 (defun spacemacs-defaults/init-savehist ()
   (use-package savehist
@@ -527,6 +538,11 @@
 
       (setq winner-boring-buffers
             (append winner-boring-buffers spacemacs/winner-boring-buffers)))))
+
+(defun spacemacs-defaults/init-xref ()
+  (evilified-state-evilify-map xref--xref-buffer-mode-map
+    :mode xref--xref-buffer-mode
+    :eval-after-load xref))
 
 (defun spacemacs-defaults/init-zone ()
   (use-package zone

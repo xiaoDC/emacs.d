@@ -1,4 +1,4 @@
-;;; config.el --- nlinum Layer packages File
+;;; config.el --- Spacemacs UI Visual Layer Configuration File
 ;;
 ;; Copyright (c) 2012-2021 Sylvain Benner & Contributors
 ;;
@@ -20,7 +20,5 @@
 ;; You should have received a copy of the GNU General Public License
 ;; along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-
-(when (configuration-layer/layer-usedp 'nlinum)
-  (spacemacs-buffer/warning (concat "nlinum layer is deprecated for Emacs 26.1 and above."
-                                    " You can safely remove it from your dotfile.")))
+(defvar spacemacs-popwin--last-buffer nil
+  "Last popwin buffer. This is a private variable.")

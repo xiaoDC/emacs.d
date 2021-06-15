@@ -90,11 +90,11 @@
   (if (configuration-layer/layer-used-p 'lsp)
       (progn
         (require (pcase python-lsp-server
-                   ('pyls 'lsp-pyls)
+                   ('pylsp 'lsp-pylsp)
                    ('mspyls 'lsp-python-ms)
                    ('pyright 'lsp-pyright)
                    (x (user-error "Unknown value for `python-lsp-server': %s" x))))
-        (lsp))
+        (lsp-deferred))
     (message "`lsp' layer is not installed, please add `lsp' layer to your dotfile.")))
 
 (defun spacemacs//python-setup-lsp-dap ()
@@ -114,10 +114,6 @@
   (when python-spacemacs-indent-guess
     (python-indent-guess-indent-offset))
 
-  (when (version< emacs-version "24.5")
-    ;; auto-indent on colon doesn't work well with if statement
-    ;; should be fixed in 24.5 and above
-    (setq electric-indent-chars (delq ?: electric-indent-chars)))
   (setq-local comment-inline-offset 2)
   (spacemacs/python-annotate-pdb)
   ;; make C-j work the same way as RET
@@ -452,22 +448,22 @@ Bind formatter to '==' for LSP and '='for all other backends."
     (python-shell-send-region start end)))
 
 (defun spacemacs/python-shell-send-line ()
-	"Send the current line to shell"
-	(interactive)
-	(let ((python-mode-hook nil)
-	       (start (point-at-bol))
-	       (end (point-at-eol)))
-	      (python-shell-send-region start end)))
+  "Send the current line to shell"
+  (interactive)
+  (let ((python-mode-hook nil)
+        (start (point-at-bol))
+        (end (point-at-eol)))
+    (python-shell-send-region start end)))
 
 (defun spacemacs/python-shell-send-statement ()
-	"Send the current statement to shell, same as `python-shell-send-statement' in Emacs27."
-	(interactive)
+  "Send the current statement to shell, same as `python-shell-send-statement' in Emacs27."
+  (interactive)
   (if (fboundp 'python-shell-send-statement)
       (call-interactively #'python-shell-send-statement)
     (if (region-active-p)
         (call-interactively #'python-shell-send-region)
       (let ((python-mode-hook nil))
-	      (python-shell-send-region
+        (python-shell-send-region
          (save-excursion (python-nav-beginning-of-statement))
          (save-excursion (python-nav-end-of-statement)))))))
 
@@ -521,11 +517,6 @@ Bind formatter to '==' for LSP and '='for all other backends."
   (switch-to-buffer-other-window "*compilation*")
   (end-of-buffer)
   (evil-insert-state))
-
-;; fix for issue #2569 (https://github.com/syl20bnr/spacemacs/issues/2569)
-(when (version< emacs-version "25")
-  (advice-add 'wisent-python-default-setup :after
-              #'spacemacs//python-imenu-create-index-use-semantic-maybe))
 
 (defun spacemacs//bind-python-repl-keys ()
   "Bind the keys for testing in Python."
