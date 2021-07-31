@@ -29,9 +29,9 @@
 (defconst emacs-start-time (current-time))
 ;; (setq gc-cons-threshold 4294967296 gc-cons-percentage 0.7)
 ;; 增大垃圾回收的阈值，提高整体性能（内存换效率）
-(setq gc-cons-threshold (* 1024 1024 256))
+(setq gc-cons-threshold (* 1024 1024 768))
 ;; 增大同LSP服务器交互时的读取文件的大小
-(setq read-process-output-max (* 1024 1024 768)) ;; 512MB
+(setq read-process-output-max (* 1024 1024 384)) ;; 512MB
 
 
 
@@ -39,20 +39,25 @@
 (load (concat (file-name-directory load-file-name)
               "core/core-versions.el")
       nil (not init-file-debug))
+
 (load (concat (file-name-directory load-file-name)
               "core/core-load-paths.el")
       nil (not init-file-debug))
+
 (load (concat spacemacs-core-directory "core-dumper.el")
       nil (not init-file-debug))
 
 ;; Remove compiled core files if they become stale or Emacs version has changed.
 (load (concat spacemacs-core-directory "core-compilation.el")
       nil (not init-file-debug))
+
 (load spacemacs--last-emacs-version-file t (not init-file-debug))
+
 (when (or (not (string= spacemacs--last-emacs-version emacs-version))
           (spacemacs//dir-contains-stale-byte-compiled-files-p
            spacemacs-core-directory))
   (spacemacs//remove-byte-compiled-files-in-dir spacemacs-core-directory))
+
 ;; Update saved Emacs version.
 (unless (string= spacemacs--last-emacs-version emacs-version)
   (spacemacs//update-last-emacs-version))
